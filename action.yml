@@ -20,4 +20,7 @@ env:
     required: true
 runs:
   using: "node12"
+  pre: |
+    npm install
+    npm run build
   main: "dist/index.js"
