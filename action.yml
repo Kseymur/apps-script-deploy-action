@@ -27,12 +27,16 @@ runs:
     - name: Install dependencies
       run: npm install
       shell: bash
-      working-directory: ${{ env.GITHUB_WORKSPACE }}
+      working-directory: ${{ github.action_path }}
 
     - name: Build TypeScript
       run: npm run build
       shell: bash
-      working-directory: ${{ env.GITHUB_WORKSPACE }}
+      working-directory: ${{ github.action_path }}
+
+    - name: Print src_folder value
+      run: echo "src_folder: ${{ inputs.src_folder }}"
+      shell: bash
 
     - name: Run main script
       run: node dist/index.js "${{ inputs.script_id }}" "${{ inputs.src_folder }}"
@@ -41,4 +45,4 @@ runs:
         CLIENT_ID: ${{ env.CLIENT_ID }}
         CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ env.REFRESH_TOKEN }}
-      working-directory: ${{ env.GITHUB_WORKSPACE }}
+      working-directory: ${{ github.action_path }}
