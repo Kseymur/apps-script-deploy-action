@@ -1,0 +1,23 @@
+name: Deploy Apps Script
+description: Deploy Google Apps Script project from GitHub repository
+author: "Kseymur (https://github.com/Kseymur)"
+inputs:
+  script_id:
+    description: The Apps Script project ID
+    required: true
+  src_folder:
+    description: Folder containing script files
+    required: true
+env:
+  CLIENT_ID:
+    description: The OAuth2 client ID
+    required: true
+  CLIENT_SECRET:
+    description: The OAuth2 client secret
+    required: true
+  REFRESH_TOKEN:
+    description: The OAuth2 refresh token
+    required: true
+runs:
+  using: "node12"
+  main: "dist/index.js"
