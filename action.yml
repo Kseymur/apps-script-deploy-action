@@ -10,29 +10,29 @@ inputs:
     required: true
 env:
   CLIENT_ID:
-    description: OAuth2 client ID
+    description: The OAuth2 client ID
     required: true
   CLIENT_SECRET:
-    description: OAuth2 client secret
+    description: The OAuth2 client secret
     required: true
   REFRESH_TOKEN:
-    description: OAuth2 refresh token
+    description: The OAuth2 refresh token
     required: true
 runs:
   using: "composite"
   steps:
     - name: Install dependencies
       run: npm install
+      shell: bash
 
     - name: Build TypeScript
       run: npm run build
+      shell: bash
 
     - name: Run main script
-      run: node dist/index.js
+      run: node dist/index.js "${{ inputs.script_id }}" "${{ inputs.src_folder }}"
+      shell: bash
       env:
         CLIENT_ID: ${{ env.CLIENT_ID }}
         CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ env.REFRESH_TOKEN }}
-      with:
-        script_id: ${{ inputs.script_id }}
-        src_folder: ${{ inputs.src_folder }}
