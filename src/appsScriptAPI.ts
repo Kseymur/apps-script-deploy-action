@@ -10,8 +10,6 @@ export async function deployToAppsScript(
   refreshToken: string
 ) {
 
-  console.log(`srcFolder: ${srcFolder}`);
-
   const auth = new google.auth.OAuth2(clientId, clientSecret);
   auth.setCredentials({ refresh_token: refreshToken });
 
@@ -21,7 +19,7 @@ export async function deployToAppsScript(
     const filePath = path.join(srcFolder, fileName);
     const fileContent = fs.readFileSync(filePath, "utf8");
     return {
-      name: fileName.replace(/\.[^/.]+$/, ""), 
+      name: fileName.replace(/\.[^/.]+$/, ""),
       type: fileName.endsWith(".js") ? "SERVER_JS" : "JSON",
       source: fileContent,
     };
@@ -41,14 +39,13 @@ export async function deployToAppsScript(
 
   console.log(`Created version ${versionResponse.data.versionNumber}`);
 
-  const deployments = await script.projects.deployments.list({ scriptId });
-  const deploymentId = deployments.data.deployments![0].deploymentId;
-
-  await script.projects.deployments.update({
+  const newDeploymentResponse = await script.projects.deployments.create({
     scriptId,
-    deploymentId: deploymentId!,
-    requestBody: { deploymentConfig: { versionNumber: versionResponse.data.versionNumber } },
+    requestBody: {
+      versionNumber: versionResponse.data.versionNumber,  
+      description: "New automated deployment",
+    },
   });
 
-  console.log("Deployment updated successfully!");
+  console.log(`New deployment created: ${newDeploymentResponse.data.deploymentId}`);
 }
