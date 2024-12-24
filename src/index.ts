@@ -13,6 +13,8 @@ async function run() {
       throw new Error("Missing OAuth credentials in environment variables");
     }
 
+    console.log(`srcFolder: ${srcFolder}`);
+
     await deployToAppsScript(scriptId, srcFolder, clientId, clientSecret, refreshToken);
   } catch (error) {
     core.setFailed((error as Error).message);

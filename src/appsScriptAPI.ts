@@ -10,6 +10,8 @@ export async function deployToAppsScript(
   refreshToken: string
 ) {
 
+  console.log(`srcFolder: ${srcFolder}`);
+
   const auth = new google.auth.OAuth2(clientId, clientSecret);
   auth.setCredentials({ refresh_token: refreshToken });
 
