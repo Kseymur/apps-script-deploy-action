@@ -3,8 +3,8 @@ import { deployToAppsScript } from "./appsScriptAPI";
 
 async function run() {
   try {
-    const scriptId = core.getInput("script_id");
-    const srcFolder = core.getInput("src_folder");
+    const scriptId = process.argv[2];  
+    const srcFolder = process.argv[3]; 
     const clientId = process.env.CLIENT_ID!;
     const clientSecret = process.env.CLIENT_SECRET!;
     const refreshToken = process.env.REFRESH_TOKEN!;
