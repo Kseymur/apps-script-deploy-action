@@ -14,6 +14,7 @@ async function run() {
     }
 
     console.log(`srcFolder: ${srcFolder}`);
+    console.log(`scriptId: ${scriptId}`);
 
     await deployToAppsScript(scriptId, srcFolder, clientId, clientSecret, refreshToken);
   } catch (error) {
