@@ -20,7 +20,11 @@ export async function deployToAppsScript(
     const fileContent = fs.readFileSync(filePath, "utf8");
     return {
       name: fileName.replace(/\.[^/.]+$/, ""),
-      type: fileName.endsWith(".js") ? "SERVER_JS" : "JSON",
+      type: fileName.endsWith(".js")
+      ? "SERVER_JS"
+      : fileName.endsWith(".html")
+      ? "HTML"
+      : "JSON",
       source: fileContent,
     };
   });
