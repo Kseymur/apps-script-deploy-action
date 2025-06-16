@@ -72,13 +72,16 @@ export async function deployToAppsScript(
   const deploymentId = lastDeployment.deploymentId;
 
   await script.projects.deployments.update({
-    scriptId,
-    deploymentId,
-    requestBody: {
+  scriptId,
+  deploymentId,
+  requestBody: {
+    deploymentConfig: {
       versionNumber: newVersion,
       description: "Updated by automated deployment",
-    },
-  });
+      manifestFileName: "appsscript"
+    }
+  },
+});
 
   console.log(`Deployment ${deploymentId} updated to version ${newVersion}`);
 }
