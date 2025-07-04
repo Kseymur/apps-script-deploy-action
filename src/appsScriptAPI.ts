@@ -44,44 +44,53 @@ export async function deployToAppsScript(
   console.log(`Created version ${newVersion}`);
 
   const listResp = await script.projects.deployments.list({ scriptId });
-  const deployments = listResp.data.deployments;
-  
-  if (!deployments || deployments.length === 0) {
-    console.log("No existing deployments found. Creating new deployment...");
-    
-    const newDeploymentResponse = await script.projects.deployments.create({
+  const deployments = listResp.data.deployments ?? [];
+
+  const editableDeployments = deployments.filter((d) =>
+    d.deploymentId !== "HEAD" &&
+    d.deploymentConfig?.versionNumber
+  );
+
+  if (editableDeployments.length === 0) {
+    const { data: { deploymentId: newDeploymentId } } =
+      await script.projects.deployments.create({
+        scriptId,
+        requestBody: {
+          versionNumber: newVersion,
+          manifestFileName: "appsscript",
+          description: "Initial CI deployment",
+        },
+      });
+
+    console.log(
+      `Created new deployment ${newDeploymentId} (version ${newVersion})`
+    );
+  } else {
+    const current = editableDeployments
+      .sort(
+        (a, b) =>
+          (a.updateTime ?? "") > (b.updateTime ?? "")
+            ? 1
+            : a.updateTime === b.updateTime
+            ? (a.deploymentConfig!.versionNumber! > b.deploymentConfig!.versionNumber! ? 1 : -1)
+            : -1
+      )
+      .at(-1)!;
+
+    await script.projects.deployments.update({
       scriptId,
+      deploymentId: current.deploymentId!,
       requestBody: {
-        versionNumber: newVersion,
-        description: "Initial automated deployment",
-        manifestFileName: "appsscript"
+        deploymentConfig: {
+          versionNumber: newVersion,
+          manifestFileName: "appsscript",
+          description: `CI deploy v${newVersion}`,
+        },
       },
     });
-    
-    const newDeploymentId = newDeploymentResponse.data.deploymentId!;
-    console.log(`Created new deployment ${newDeploymentId} with version ${newVersion}`);
-    return;
+
+    console.log(
+      `Deployment ${current.deploymentId} updated to version ${newVersion}`
+    );
   }
-
-  const lastDeployment = deployments[deployments.length - 1];
-  
-  if (!lastDeployment.deploymentId) {
-    throw new Error("Last deployment has no valid deployment ID");
-  }
-  
-  const deploymentId = lastDeployment.deploymentId;
-
-  await script.projects.deployments.update({
-  scriptId,
-  deploymentId,
-  requestBody: {
-    deploymentConfig: {
-      versionNumber: newVersion,
-      description: "Updated by automated deployment",
-      manifestFileName: "appsscript"
-    }
-  },
-});
-
-  console.log(`Deployment ${deploymentId} updated to version ${newVersion}`);
 }
